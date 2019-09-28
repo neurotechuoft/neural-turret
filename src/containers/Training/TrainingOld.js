@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Arrows from './components/ArrowComponent'
+import Arrows from '../../components/ArrowComponent'
 
 import io from "socket.io-client";
-import './App.css';
-import './EntrySizes.css';
-import { getRandomArray } from './helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
-import { sendTrainingFlashEvent } from './helpers/P300Communication';
+import '../App/App.css';
+import '../App/EntrySizes.css';
+import { getRandomArray } from '../../helpers/shuffle';
+import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
+import { sendTrainingFlashEvent } from '../../helpers/P300Communication';
 
 // Getting rows
 const row1 = document.getElementsByClassName('row1');

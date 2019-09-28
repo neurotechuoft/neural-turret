@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './mindtype_logo.png';
+import logo from '../../assets/mindtype_logo.png';
 
 
 class Login extends React.Component {

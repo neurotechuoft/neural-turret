@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import App from './containers/App';
-import Start from './Start';
-import Intro from './Intro';
-import Training from './Training';
-import Final from './Final';
+import App from '../App/App';
+import Start from '../Start/Start';
+import Intro from '../Intro/Intro';
+import Training from '../Training/Training';
+import Final from '../Final/Final';
 
 
 class Control extends React.Component {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import Arrows from './components/ArrowComponent'
-import { getRandomArray } from './helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
-import { sendTrainingFlashEvent, masterUUID } from './helpers/P300Communication';
-import Sockets from "./helpers/getSockets";
+import Arrows from '../../components/ArrowComponent'
+import { getRandomArray } from '../../helpers/shuffle';
+import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
+import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
+import Sockets from "../../helpers/getSockets";
 
 let prevId = 0;
 let curRow = 0; // Keeping track of which array index you're on for random rows.

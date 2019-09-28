@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import logo from './mindtype_logo.png';
-import Sockets from "./helpers/getSockets";
+import logo from '../../assets/mindtype_logo.png';
+import Sockets from "../../helpers/getSockets";
 
 // Sockets 
 const client_socket = (new Sockets()).client_socket;

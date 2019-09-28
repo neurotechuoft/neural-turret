@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import Arrows from "./../components/ArrowComponent";
-import { getRandomArray } from './../helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from './../helpers/intervals';
-import Sockets from "./../helpers/getSockets";
-import '../App.css';
-import '../EntrySizes.css';
+import Arrows from "../../components/ArrowComponent";
+import { getRandomArray } from '../../helpers/shuffle';
+import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
+import Sockets from "../../helpers/getSockets";
+import './App.css';
+import './EntrySizes.css';
 
 const uuid_v1 = require("uuid/v1");
 
