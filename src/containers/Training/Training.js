@@ -5,12 +5,6 @@ import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
 import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
 import Sockets from "../../helpers/getSockets";
 
-let prevId = 0;
-let curRow = 0; // Keeping track of which array index you're on for random rows.
-let curCol = 0; // Keeping track of which array index you're on for random cols.
-
-let selectedKeyId = null;
-
 // Sockets
 const client_socket = (new Sockets()).client_socket;
 const robot_socket = (new Sockets()).robot_socket;
@@ -21,22 +15,18 @@ class Training extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            statement: '',
-            // display: 'letters', 
+            statement: '↖↑↗→←↖↗→↑↗←↖→↖←',
             displayText: '', 
             interval : null,
             lettersFound : 0,
-            rowOrder : null,
-            colOrder : null,
-            rowFound : false,
-            colFound : false,
+            rowOrder: getRandomArray(Arrows.ROWS.length),
+            colOrder: getRandomArray(Arrows.COLS.length),
+            rowIndex: null,
+            colIndex: null,
+            isP300: false,
 
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
         };
-        // this.handleNumClick = this.handleNumClick.bind(this);
-        // this.handleEmojiClick = this.handleEmojiClick.bind(this);
-        // this.handleLetterClick = this.handleLetterClick.bind(this);
-        // this.handlePredictions = this.handlePredictions.bind(this);
         this.writePhrase = this.writePhrase.bind(this);
     }
 
@@ -52,112 +42,103 @@ class Training extends React.Component {
         this.setState({btnStates});
     }
 
-    writePhrase() {
-        const {statement, interval, lettersFound, rowOrder, 
-            colOrder, rowFound, colFound, displayText} = this.state;
+    shuffleOrder(){
+        const rowOrder = getRandomArray(Arrows.ROWS.length);
+        const colOrder = getRandomArray(Arrows.COLS.length);
+        this.setState({
+            rowOrder: rowOrder, 
+            colOrder: colOrder,
+            rowIndex: 0,
+            colIndex: 0,
+        });
+        console.log("shuffled!");
+    }
 
-        if (lettersFound === statement.length) {
-            clearInterval(interval);
+    // Returns T/F if the statement has been completed.
+    isPhraseComplete(){
+        return this.state.lettersFound === this.state.statement.length;
+    }
+
+    // Get the index of the current character in the statement that we are trying to train.
+    getCurrentIndex(){
+        return this.state.lettersFound;
+    }
+
+    // Gets called every FLASHING_PAUSE interval
+    writePhrase() {
+        const curRowOrder = this.state.rowOrder;
+        const curColOrder = this.state.colOrder;
+        const curRowIndex = this.state.rowIndex;
+        const curColIndex = this.state.colIndex;
+        const curRowIndexRand = curRowOrder[curRowIndex];
+        const curColIndexRand =  curColOrder[curColIndex];
+        const statement = this.state.statement;
+        console.log("row order: " + curRowOrder);
+        console.log("row index: " + curRowIndex);
+        console.log("random row index: " + curRowIndexRand);
+        console.log("col order: " + curColOrder);
+        console.log("col index: " + curColIndex);
+        console.log("random col index: " + curColIndexRand);
+        if (this.isPhraseComplete()) {
+            clearInterval(this.state.interval);
             setTimeout(this.props.TrainingHandler, getNextInstrPause());
         }
-        else {
-            this.resetKeys();
-
-            // Rows/cols shouldn't flash if they've already been found.
-            let flashRowsOrCols; // 1 to flash rows, 2 to flash cols
-            if (rowFound) flashRowsOrCols = 2;
-            else if (colFound) flashRowsOrCols = 1;
-            else flashRowsOrCols = Math.floor((Math.random() * 2) + 1);
-
-            if (curRow >= rowOrder.length) {
-                const rowOrder = getRandomArray(Arrows.ROWS.length);
-                curRow = 0;
-                this.setState({rowOrder});
-            }
-            if (curCol >= colOrder.length) {
-                const colOrder = getRandomArray(Arrows.COLS.length);
-                curCol = 0;
-                this.setState({colOrder});
-            }
-
-            if (flashRowsOrCols === 1) {
-                const rowId = rowOrder[curRow];
-                prevId = rowId;
-                curRow = curRow + 1;
-
-                for (let j = 0; j < Arrows.ROWS[rowId].length; j++) {
-                    let currKeyId = Arrows.ROWS[rowId][j]
-                    this.setBtnState(currKeyId, "selected");
-
-                    if (Arrows.BTN_VALS[currKeyId] == statement[lettersFound]) {
-                        let trainingFlashEvent = false;
-                        if (colFound) {
-                            selectedKeyId = currKeyId;
-                            trainingFlashEvent = true;
-                        }
-
-                        sendTrainingFlashEvent(client_socket, masterUUID(), trainingFlashEvent); // TODO: UNSAFE!!!!!
-                        const rowOrder = getRandomArray(Arrows.ROWS.length);
-                        curRow = 0;
-                        this.setState({rowFound : true, rowOrder});
-                    }
+        this.resetKeys();
+        const curGoal = statement[this.getCurrentIndex()]; // Next char to select
+        const curBtnIndex = Arrows.ROWS[curRowIndexRand][curColIndexRand];
+        
+        this.setBtnState(curBtnIndex, "selected");
+        let isP300 = (Arrows.BTN_VALS[curBtnIndex] === curGoal);
+        sendTrainingFlashEvent(client_socket, masterUUID(), isP300);
+        
+        if(isP300) {
+            this.setBtnState(curBtnIndex, "chosen");
+            const curKey = Arrows.BTN_VALS[curBtnIndex];
+            console.log(curKey);
+            const newDisplay = this.state.displayText + curKey;
+            this.setState({
+                displayText : newDisplay, 
+                lettersFound : this.getCurrentIndex() + 1,
+            });
+            this.shuffleOrder();
+            
+            // Emitting an event to the socket to type letter.
+            robot_socket.emit('turret', curKey);
+        } else {
+            let newRowIndex = curRowIndex;
+            let newColIndex = curColIndex;
+            if(curColIndex === Arrows.COLS.length - 1) {
+                newColIndex = 0;
+                if(curRowIndex === Arrows.ROWS.length - 1) {
+                    newRowIndex = 0;
+                } else {
+                    newRowIndex ++;
                 }
+            } else {
+                newColIndex ++;
             }
-            else {
-                const colId = colOrder[curRow];
-                prevId = colId;
-                curCol = curCol + 1;
-
-                for (let j = 0; j < Arrows.COLS[colId].length; j++) {
-                    let currKeyId = Arrows.COLS[colId][j]
-                    this.setBtnState(currKeyId, "selected");
-
-                    if (Arrows.BTN_VALS[currKeyId] == statement[lettersFound]) {
-                        let trainingFlashEvent = false;
-                        if (colFound) {
-                            selectedKeyId = currKeyId;
-                            trainingFlashEvent = true;
-                        }
-
-                        sendTrainingFlashEvent(client_socket, masterUUID(), trainingFlashEvent); // TODO: UNSAFE!!!!!
-                        const colOrder = getRandomArray(Arrows.COLS.length);
-                        curCol = 0;
-                        this.setState({colFound : true, colOrder});
-                    }
-                }
-            }
-
-            // If a letter has been found.
-            if (rowFound && colFound) {
-                this.setBtnState(selectedKeyId, "chosen");
-
-                // TODO: Reset numCol and numRow to -1
-                [curRow, curCol] = [0, 0];
-                const newDisplay = displayText + (Arrows.BTN_VALS).indexOf(statement[lettersFound]);
-                this.setState({rowFound : false, colFound : false, 
-                displayText : newDisplay, lettersFound : lettersFound + 1});
-                
-                // Emitting an event to the socket to type letter.
-                robot_socket.emit('turret', statement[lettersFound]);
-                
-                // Emitting an event to the socket to recieve word predictions.
-                // nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
-            }
+            this.setState({
+                rowIndex: newRowIndex,
+                colIndex: newColIndex,
+            });
         }
     }
 
     componentDidMount() {
-        const statement = "↖↑↗→←↖↗→↑↗←↖→↖←";
-        const rowOrder = getRandomArray(Arrows.ROWS.length);
-        const colOrder = getRandomArray(Arrows.COLS.length);
+        const statement = this.state.statement;
         const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-        this.setState({interval, statement, rowOrder, colOrder});
+        this.setState({
+            interval: interval, 
+            statement: statement, 
+        });
+        this.shuffleOrder();
     }
 
     render() {
         return (
             <div className="instructionScreen">
-                <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: "mind"</h3>
+                <h3 className="mindTypeColorText smallerText">Let's try to select the following sequence of characters: {this.state.statement}</h3>
+                <h4>{this.state.statement[this.state.lettersFound]}</h4>
                 <input type="text" className="displayInstruction" readOnly></input>
                 <Arrows btnStates={this.state.btnStates}/>
             </div>

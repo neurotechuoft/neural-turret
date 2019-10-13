@@ -9,43 +9,79 @@ class SignUp extends React.Component {
 	
 	constructor(props) {
     super(props);
-	this.state = { 
+	  this.state = { 
       emailValue: '',
-	  passwordValue: '',
-	  nameValue: ''
+	    passwordValue: '',
+	    nameValue: ''
     };
     this.handleSignUpClick = this.handleSignUpClick.bind(this);
-	this.checkSignUp = this.checkSignUp.bind(this);
+	  this.checkSignUp = this.checkSignUp.bind(this);
   }
 	
   handleSignUpClick(){
     let signup = {
-      'username': this.state.emailValue,
+      'username': this.state.nameValue,
       'password': this.state.passwordValue,
       'email': this.state.emailValue
     };
-	 client_socket.emit("register", JSON.stringify(signup), this.checkSignUp);
-	 this.props.signUpHandler();
+    console.log(signup);
+   //client_socket.emit("register", JSON.stringify(signup), this.checkSignUp);
+   this.props.signUpHandler();
   }
   
   checkSignUp(sid, tf){
 	  if (tf === false){
-		alert('The information you entered is invalid or the email is already taken');
+		  alert('The information you entered is invalid or the email is already taken');
 	  } else {
 		  this.props.signUpHandler();
 	  }
   }
   
+  handleNameChange(event){
+    this.setState({
+      nameValue: event.target.value
+    });
+  }  
+  handleEmailChange(event){
+    this.setState({
+      emailValue: event.target.value
+    });
+  }  
+  handlePasswordChange(event){
+    this.setState({
+      passwordValue: event.target.value
+    });
+  }
+
   render(){
     return (
       <div>
         <img src={logo} className="logoMindType"/><br />
         <br/>
-        <input type="text" className="name-user" placeholder="Name" value={this.nameValue}></input><br />
+        <input type="text" 
+          className="name-user" 
+          placeholder="Name" 
+          value={this.state.nameValue}
+          onChange={this.handleNameChange.bind(this)}
+        >
+        </input>
         <br />
-        <input type="email" className="email-input" placeholder="Email" value={this.emailValue}></input><br />
         <br />
-        <input type="password" className="password-input" placeholder="Password" value={this.passwordValue}></input><br />
+        <input type="email" 
+          className="email-input" 
+          placeholder="Email" 
+          value={this.state.emailValue}
+          onChange={this.handleEmailChange.bind(this)}>
+        </input>
+        <br />
+        <br />
+        <input type="password" 
+          className="password-input" 
+          placeholder="Password" 
+          value={this.state.passwordValue}
+          onChange={this.handlePasswordChange.bind(this)}>
+        </input>
+        <br />
         <br />
         <button className="sign-up" onClick={this.handleSignUpClick}>Sign Up</button>
 		<br />

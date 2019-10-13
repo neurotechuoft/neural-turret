@@ -10,7 +10,7 @@ export function sendTrainingFlashEvent(client_socket, userId, p300) {
         'p300': p300
     }
 
-    client_socket.emit("train", JSON.stringify(json), print_args);
+    client_socket.emit("train_classifier", JSON.stringify(json), print_args);
     console.log("Emitted", json);
 }
 
