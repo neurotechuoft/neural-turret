@@ -73,12 +73,6 @@ class Training extends React.Component {
         const curRowIndexRand = curRowOrder[curRowIndex];
         const curColIndexRand =  curColOrder[curColIndex];
         const statement = this.state.statement;
-        console.log("row order: " + curRowOrder);
-        console.log("row index: " + curRowIndex);
-        console.log("random row index: " + curRowIndexRand);
-        console.log("col order: " + curColOrder);
-        console.log("col index: " + curColIndex);
-        console.log("random col index: " + curColIndexRand);
         if (this.isPhraseComplete()) {
             clearInterval(this.state.interval);
             setTimeout(this.props.TrainingHandler, getNextInstrPause());
@@ -138,8 +132,7 @@ class Training extends React.Component {
         return (
             <div className="instructionScreen">
                 <h3 className="mindTypeColorText smallerText">Let's try to select the following sequence of characters: {this.state.statement}</h3>
-                <h4>{this.state.statement[this.state.lettersFound]}</h4>
-                <input type="text" className="displayInstruction" readOnly></input>
+                <h4 className="mindTypeColorText">{this.state.statement[this.state.lettersFound]}</h4>
                 <Arrows btnStates={this.state.btnStates}/>
             </div>
         )

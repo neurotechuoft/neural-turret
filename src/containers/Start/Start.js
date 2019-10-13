@@ -1,50 +1,50 @@
 import React, { Component } from 'react';
 import SignUp from '../SignUp/SignUp';
 import Login from '../Login/Login';
-import logo from '../../assets/welcome.png'
+import {Logo, Button} from '../../components/Elements';
 
 class Start extends React.Component {
   constructor(props) {
     super(props);
     this.state = {display: 'welcome'};
-    this.handleLoginClick = this.handleLoginClick.bind(this);
-    this.handleSignUpClick = this.handleSignUpClick.bind(this);
-    this.goBack = this.goBack.bind(this);
-  }
-
-  handleLoginClick(){
-    this.setState({display: 'login'});
-  }
-
-  handleSignUpClick(){
-    this.setState({display: 'sign-up'});
   }
 	
 	goBack(){
 		this.setState({display: 'welcome'});
 	}
 
-render() {
-  let element;
-  if (this.state.display === 'welcome'){
-    element = (
-      <div>
-        <img src={logo} className="welcomeLogo"/><br />
-        <button onClick={this.handleLoginClick} className="login">Login</button>
-        <br />
-        <button onClick={this.handleSignUpClick} className="sign-up">Sign Up</button>
-      </div>
-    );
-  } else if (this.state.display === 'login'){
-    element = <Login loginHandler={this.props.loginHandler} goBack={this.goBack}/>;
-  } else if (this.state.display === 'sign-up') {
-    element = <SignUp goBack={this.goBack} signUpHandler={this.props.signUpHandler}/>;
-  }
-  return (
-    <div>
-      {element}
-    </div>
-  )
+  render() {
+    if (this.state.display === 'welcome'){
+      return (
+        <div>
+          <Logo/>
+          <Button 
+            onClick={() => this.setState({display: 'login'})} 
+            className="login" 
+            value="Login"
+          />
+          <Button 
+            onClick={() => this.setState({display: 'sign-up'})} 
+            className="sign-up" 
+            value="Sign Up"
+          />
+        </div>
+      );
+    } 
+    if (this.state.display === 'login'){
+      return (
+        <div>
+          <Login loginHandler={this.props.loginHandler} goBack={this.goBack.bind(this)}/>
+        </div>
+      );
+    } 
+    if (this.state.display === 'sign-up') {
+      return (
+        <div>
+          <SignUp goBack={this.goBack.bind(this)} signUpHandler={this.props.signUpHandler}/>
+        </div>
+      );
+    }
   }
 }
 

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import logo from '../../assets/mindtype_logo.png';
 import Sockets from "../../helpers/getSockets";
+import {EmailInput, PasswordInput} from "../../components/FormFields";
+import {Button, Logo} from "../../components/Elements";
 
 // Sockets 
-const robot_socket = (new Sockets()).robot_socket;
+const client_socket = (new Sockets()).client_socket;
 
 class Login extends React.Component {
 	constructor(props) {
@@ -21,7 +22,7 @@ class Login extends React.Component {
       'username': this.state.emailValue,
       'password': this.state.passwordValue
     };
-    //robot_socket.emit("login", JSON.stringify(login), this.checkLogin);
+    //client_socket.emit("login", JSON.stringify(login), this.checkLogin);
     this.props.loginHandler();
   }
   
@@ -32,43 +33,15 @@ class Login extends React.Component {
       this.props.loginHandler();
     }
   }
-  
-  handleEmailChange(event){
-    this.setState({
-      emailValue: event.target.value
-    });
-  }  
-  handlePasswordChange(event){
-    this.setState({
-      passwordValue: event.target.value
-    });
-  }
 
   render(){
     return (
       <div>
-        <img src={logo} className="logoMindType"/>
-        <br />
-        <br/>
-        <input type="email" 
-          value={this.state.emailValue} 
-          className="email-input" 
-          placeholder="Email"
-          onChange={this.handleEmailChange.bind(this)}>
-        </input>
-        <br />
-        <br />
-        <input type="password" 
-          value={this.state.passwordValue} 
-          className="password-input" 
-          placeholder="Password"
-          onChange={this.handlePasswordChange.bind(this)}>
-        </input>
-        <br />
-        <br />
-        <button className="login" onClick={this.handleLoginClick}>Login</button>
-		    <br />
-		    <button className="back" onClick={this.props.goBack}>Go Back</button>
+        <Logo/>
+        <EmailInput onChange={this.setState}/>
+        <PasswordInput onChange={this.setState}/>
+        <Button className="login" onClick={this.handleLoginClick} value="Login"/>
+        <Button className="back" onClick={this.props.goBack} value="Go Back"/>
       </div>
     )
   }
