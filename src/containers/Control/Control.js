@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import App from '../App/App';
 import Welcome from '../Welcome/Welcome';
 import MoreInfo from '../MoreInfo/MoreInfo';
-import Training from '../Training/Training';
+import Training from '../AppControllers/Training';
 import Final from '../Final/Final';
 import Login from '../Login/Login';
 import SignUp from '../SignUp/SignUp';
 import Selection from "../Selection/Selection"
+import Turret from '../AppControllers/Turret';
 
 export const screens = {
 	WELCOME: "welcome",
@@ -54,7 +55,7 @@ class Control extends React.Component {
 		} else if (this.isScreenDisplay(screens.TRAIN)){
 			element = <Training updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
 		} else if (this.isScreenDisplay(screens.APP)){
-			element = <App updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
+			element = <Turret updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
 		}
 		return (
 			<div>

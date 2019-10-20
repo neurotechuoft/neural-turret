@@ -12,7 +12,7 @@ import './EntrySizes.css';
 const client_socket = (new Sockets()).client_socket; // Receive P300 predictions
 const robotSocket = (new Sockets()).robot_socket;  // Control the Turret
 
-class App extends React.Component {
+export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {  
@@ -25,6 +25,44 @@ class App extends React.Component {
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
         };
         this.update = this.update.bind(this);
+    }
+
+    componentDidMount() {
+        const interval = setInterval(this.update, getFlashingPause());
+        this.setState({
+            interval: interval
+        });
+        this.shuffleOrder();
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.state.interval);
+    }
+
+    // Gets called every FLASHING_PAUSE interval
+    update() {
+        this.resetKeys();
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
+        const curKey = Arrows.BTN_VALS[curBtnIndex];
+        this.props.updateCallback(curKey, (args) => {
+            if(this.props.isChosen(curKey, args)){
+                this.setBtnState(curBtnIndex, "chosen");
+                this.props.handleSelection(curKey, args);
+                this.shuffleOrder();
+            } else {
+                this.updateCurIndices();
+            }
+        });
+    }
+
+    render() {
+        return (
+            <div className="instructionScreen">
+                {this.props.value}
+                <Arrows btnStates={this.state.btnStates}/>
+            </div>
+        )
     }
 
     resetKeys() {
@@ -48,18 +86,6 @@ class App extends React.Component {
             rowIndex: 0,
             colIndex: 0,
         });
-    }
-
-    handlePrediction(args){
-        if(args['p300']){
-            let curBtnIndex = this.getCurBtnIndex();
-            this.setBtnState(curBtnIndex, "chosen");
-            const curKey = Arrows.BTN_VALS[curBtnIndex];
-            console.log("P300 for key: " + curKey + " with score: " + args['score']);
-            this.shuffleOrder();
-        } else {
-            this.updateCurIndices();
-        }
     }
 
     getCurBtnIndex(){
@@ -94,32 +120,4 @@ class App extends React.Component {
             colIndex: newColIndex,
         });
     }
-
-    // Gets called every FLASHING_PAUSE interval
-    update() {
-        this.resetKeys();
-        const curBtnIndex = this.getCurBtnIndex();
-        this.setBtnState(curBtnIndex, "selected");
-
-        sendPredictionEvent(client_socket, masterUUID(), this.handlePrediction.bind(this));
-    }
-
-    componentDidMount() {
-        const interval = setInterval(this.update, getFlashingPause());
-        this.setState({
-            interval: interval
-        });
-        this.shuffleOrder();
-    }
-
-    render() {
-        return (
-            <div className="instructionScreen">
-                <h3 className="mindTypeColorText smallerText">Try to select a direction using your brain!</h3>
-                <Arrows btnStates={this.state.btnStates}/>
-            </div>
-        )
-    }
 }
-
-export default App;
