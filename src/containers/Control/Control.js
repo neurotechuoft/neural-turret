@@ -1,61 +1,67 @@
 import React, { Component } from 'react';
 import App from '../App/App';
-import Start from '../Start/Start';
-import Intro from '../Intro/Intro';
+import Welcome from '../Welcome/Welcome';
+import MoreInfo from '../MoreInfo/MoreInfo';
 import Training from '../Training/Training';
 import Final from '../Final/Final';
+import Login from '../Login/Login';
+import SignUp from '../SignUp/SignUp';
+import Selection from "../Selection/Selection"
 
+export const screens = {
+	WELCOME: "welcome",
+	LOGIN: "login",
+	SIGNUP: "signup",
+	MORE_INFO: "moreInfo",
+	SELECTION: "selection",
+	TRAIN: "train",
+	APP: "app",
+}
 
 class Control extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {screenDisplay: 'start'};
-	  this.loginHandler = this.loginHandler.bind(this);
-	  this.signUpHandler = this.signUpHandler.bind(this);
-	  this.introHandler = this.introHandler.bind(this);
-	  this.trainingHandler = this.trainingHandler.bind(this);
-	  this.finalHandler = this.finalHandler.bind(this);
+	constructor(props) {
+		super(props);
+		this.state = {
+			screenDisplay: screens.WELCOME,
+			prevDisplay: null
+		};
+		this.updateDisplay = this.updateDisplay.bind(this);
     }
-	
-	loginHandler(){
-		this.setState({screenDisplay: 'app'});
-	}
-	
-	signUpHandler(){
-		this.setState({screenDisplay: 'intro'});
-	}
-	
-	introHandler(){
-		this.setState({screenDisplay: 'training'});
+
+	updateDisplay(newScreen){
+		this.setState({
+			prevDisplay: this.state.screenDisplay,
+			screenDisplay: newScreen
+		});
 	}
 
-	trainingHandler(){
-		this.setState({screenDisplay: 'final'});
-	}
-	
-	finalHandler(){
-		this.setState({screenDisplay: 'app'});
+	isScreenDisplay(screenDisplay){
+		return this.state.screenDisplay === screenDisplay;
 	}
 
-render() {
-  let element;
-        if (this.state.screenDisplay === 'start'){
-          element = <Start loginHandler = {this.loginHandler} signUpHandler = {this.signUpHandler}/>
-        } else if (this.state.screenDisplay === 'app'){
-          element = <App />;
-        } else if (this.state.screenDisplay === 'intro'){
-		  element = <Intro introHandler={this.introHandler}/>;
-		} else if (this.state.screenDisplay === 'training'){
-		  element = <Training trainingHandler={this.trainingHandler} />
-		} else if (this.state.screenDisplay === 'final'){
-		  element = <Final finalHandler={this.finalHandler} />
+	render() {
+		let element;
+        if (this.isScreenDisplay(screens.WELCOME)){
+			element = <Welcome updateDisplay={this.updateDisplay}/>
+        } else if (this.isScreenDisplay(screens.LOGIN)){
+			element = <Login updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) } />;
+        } else if (this.isScreenDisplay(screens.SIGNUP)){
+			element = <SignUp updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) } />;
+		} else if (this.isScreenDisplay(screens.MORE_INFO)){
+			element = <MoreInfo updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
+		} else if (this.isScreenDisplay(screens.SELECTION)){
+			element = <Selection updateDisplay={this.updateDisplay} />
+		} else if (this.isScreenDisplay(screens.TRAIN)){
+			element = <Training updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
+		} else if (this.isScreenDisplay(screens.APP)){
+			element = <App updateDisplay={this.updateDisplay} goBack={() => this.updateDisplay(this.state.prevDisplay) }  />
 		}
-  return (
-    <div>
-      {element}
-    </div>
-  )
-}
+		return (
+			<div>
+			{element}
+			</div>
+		)
+	}
 }
 
 export default Control;

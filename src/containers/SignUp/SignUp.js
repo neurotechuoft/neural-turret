@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Sockets from "../../helpers/getSockets";
 import {EmailInput, PasswordInput, NameInput} from "../../components/FormFields";
 import {Button, Logo} from "../../components/Elements";
+import {Control, screens} from '../Control/Control';
 
 // Sockets 
 const client_socket = (new Sockets()).client_socket;
@@ -16,7 +17,6 @@ class SignUp extends React.Component {
 	    nameValue: ''
     };
     this.handleSignUpClick = this.handleSignUpClick.bind(this);
-	  this.checkSignUp = this.checkSignUp.bind(this);
   }
 	
   handleSignUpClick(){
@@ -25,17 +25,15 @@ class SignUp extends React.Component {
       'password': this.state.passwordValue,
       'email': this.state.emailValue
     };
-    console.log(signup);
-   //client_socket.emit("register", JSON.stringify(signup), this.checkSignUp);
-   this.props.signUpHandler();
+    if(this.registerUser(signup)) {
+      this.props.updateDisplay(screens.SELECTION);
+    }
   }
   
-  checkSignUp(sid, tf){
-	  if (tf === false){
-		  alert('The information you entered is invalid or the email is already taken');
-	  } else {
-		  this.props.signUpHandler();
-	  }
+  // Returns true iff the user was registered successfully.
+  registerUser(details){
+    // Currently hard coded. In future will link to DB and have validation checks
+    return true;
   }
 
   render(){
@@ -46,7 +44,7 @@ class SignUp extends React.Component {
         <EmailInput onChange={this.setState} />
         <PasswordInput onChange={this.setState} />
         <Button className="sign-up" onClick={this.handleSignUpClick} value="Sign Up"/>
-		    <Button className="back" onClick={this.props.goBack} value="Go Back"/>
+		    <Button className="back" onClick={() => this.props.updateDisplay(screens.WELCOME)} value="Go Back"/>
       </div>
     )
   }

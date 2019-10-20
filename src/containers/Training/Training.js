@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Arrows from '../../components/ArrowComponent'
 import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
 import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
 import Sockets from "../../helpers/getSockets";
+import {Control, screens} from '../Control/Control';
 
 // Sockets
 const client_socket = (new Sockets()).client_socket;
-const robot_socket = (new Sockets()).robot_socket;
-const FLASHING_PAUSE = getFlashingPause();
 
 class Training extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = { 
-            statement: '↖↑↗→←↖↗→↑↗←↖→↖←',
+            // All the possible options: ↖↑↗→←o
+            statement: '↖↑↗→',
             displayText: '', 
             interval : null,
             lettersFound : 0,
@@ -23,11 +23,10 @@ class Training extends React.Component {
             colOrder: getRandomArray(Arrows.COLS.length),
             rowIndex: null,
             colIndex: null,
-            isP300: false,
 
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
         };
-        this.writePhrase = this.writePhrase.bind(this);
+        this.update = this.update.bind(this);
     }
 
     resetKeys() {
@@ -51,7 +50,6 @@ class Training extends React.Component {
             rowIndex: 0,
             colIndex: 0,
         });
-        console.log("shuffled!");
     }
 
     // Returns T/F if the statement has been completed.
@@ -64,63 +62,78 @@ class Training extends React.Component {
         return this.state.lettersFound;
     }
 
-    // Gets called every FLASHING_PAUSE interval
-    writePhrase() {
+    getCurBtnIndex(){
         const curRowOrder = this.state.rowOrder;
         const curColOrder = this.state.colOrder;
         const curRowIndex = this.state.rowIndex;
         const curColIndex = this.state.colIndex;
         const curRowIndexRand = curRowOrder[curRowIndex];
         const curColIndexRand =  curColOrder[curColIndex];
-        const statement = this.state.statement;
-        if (this.isPhraseComplete()) {
-            clearInterval(this.state.interval);
-            setTimeout(this.props.TrainingHandler, getNextInstrPause());
+        return Arrows.ROWS[curRowIndexRand][curColIndexRand];
+    }
+
+    // Update rowIndex and colIndex in state
+    updateCurIndices(){
+        const curRowIndex = this.state.rowIndex;
+        const curColIndex = this.state.colIndex;
+
+        let newRowIndex = curRowIndex;
+        let newColIndex = curColIndex;
+        if(curColIndex === Arrows.COLS.length - 1) {
+            newColIndex = 0;
+            if(curRowIndex === Arrows.ROWS.length - 1) {
+                newRowIndex = 0;
+            } else {
+                newRowIndex ++;
+            }
+        } else {
+            newColIndex ++;
         }
-        this.resetKeys();
-        const curGoal = statement[this.getCurrentIndex()]; // Next char to select
-        const curBtnIndex = Arrows.ROWS[curRowIndexRand][curColIndexRand];
-        
-        this.setBtnState(curBtnIndex, "selected");
-        let isP300 = (Arrows.BTN_VALS[curBtnIndex] === curGoal);
-        sendTrainingFlashEvent(client_socket, masterUUID(), isP300);
-        
-        if(isP300) {
+        this.setState({
+            rowIndex: newRowIndex,
+            colIndex: newColIndex,
+        });
+    }
+
+    handleTrain(args){
+        if(this.isP300()){
+            const curBtnIndex = this.getCurBtnIndex();
             this.setBtnState(curBtnIndex, "chosen");
             const curKey = Arrows.BTN_VALS[curBtnIndex];
-            console.log(curKey);
             const newDisplay = this.state.displayText + curKey;
             this.setState({
                 displayText : newDisplay, 
                 lettersFound : this.getCurrentIndex() + 1,
             });
             this.shuffleOrder();
-            
-            // Emitting an event to the socket to type letter.
-            robot_socket.emit('turret', curKey);
-        } else {
-            let newRowIndex = curRowIndex;
-            let newColIndex = curColIndex;
-            if(curColIndex === Arrows.COLS.length - 1) {
-                newColIndex = 0;
-                if(curRowIndex === Arrows.ROWS.length - 1) {
-                    newRowIndex = 0;
-                } else {
-                    newRowIndex ++;
-                }
-            } else {
-                newColIndex ++;
+
+            if (this.isPhraseComplete()) {
+                clearInterval(this.state.interval);
+                setTimeout(() => this.props.updateDisplay(screens.SELECTION), getNextInstrPause());
             }
-            this.setState({
-                rowIndex: newRowIndex,
-                colIndex: newColIndex,
-            });
+        } else {
+            this.updateCurIndices();
         }
+    }
+
+    isP300() {
+        const curGoal = this.state.statement[this.getCurrentIndex()]; // Next char to select
+        const curBtnIndex = this.getCurBtnIndex();
+        return Arrows.BTN_VALS[curBtnIndex] === curGoal;
+    }
+
+    // Gets called every FLASHING_PAUSE interval
+    update() {
+        this.resetKeys();
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
+
+        sendTrainingFlashEvent(client_socket, masterUUID(), this.isP300(), this.handleTrain.bind(this));
     }
 
     componentDidMount() {
         const statement = this.state.statement;
-        const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
+        const interval = setInterval(this.update, getFlashingPause());
         this.setState({
             interval: interval, 
             statement: statement, 
@@ -133,6 +146,7 @@ class Training extends React.Component {
             <div className="instructionScreen">
                 <h3 className="mindTypeColorText smallerText">Let's try to select the following sequence of characters: {this.state.statement}</h3>
                 <h4 className="mindTypeColorText">{this.state.statement[this.state.lettersFound]}</h4>
+                <h4>current: {this.state.displayText}</h4>
                 <Arrows btnStates={this.state.btnStates}/>
             </div>
         )

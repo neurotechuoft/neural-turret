@@ -2,108 +2,30 @@ import React, { Component } from 'react';
 import Arrows from "../../components/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
+import { sendPredictionEvent, masterUUID } from '../../helpers/P300Communication';
 import Sockets from "../../helpers/getSockets";
+import {Control, screens} from '../Control/Control';
 import './App.css';
 import './EntrySizes.css';
 
-const uuid_v1 = require("uuid/v1");
-
 // Sockets
-const client_socket = (new Sockets()).client_socket;
-const robotSocket = (new Sockets()).robot_socket;
-
-const FLASHING_PAUSE = getFlashingPause();
-
-let prevId = 0;
-let curRow = 0; // Keeping track of which array index you're on for random rows.
-let curCol = 0; // Keeping track of which array index you're on for random cols.
-
-let selectedKeyId = null;
-
-let uuid_key_dict = {};
-let uuid_accuracies = {};
+const client_socket = (new Sockets()).client_socket; // Receive P300 predictions
+const robotSocket = (new Sockets()).robot_socket;  // Control the Turret
 
 class App extends React.Component {
-
     constructor(props) {
         super(props);
-
-        this.state = {
-            statement: '',
-            // display: 'letters', 
-            displayText: '', 
+        this.state = {  
             interval : null,
-            lettersFound : 0,
-            rowOrder : null,
-            colOrder : null,
-            rowFound : false,
-            colFound : false,
+            rowOrder: getRandomArray(Arrows.ROWS.length),
+            colOrder: getRandomArray(Arrows.COLS.length),
+            rowIndex: null,
+            colIndex: null,
 
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
-        }
-
-        this.writePhrase = this.writePhrase.bind(this);
-    }
-
-    sendFlashEvent(groupId, keytype) {
-        let uuid = uuid_v1();
-        let timestamp = Date.now() / 1000.0;
-    
-        let json = {
-            'uuid': uuid,
-            'timestamp': timestamp
-        }
-    
-        client_socket.emit("predict", JSON.stringify(json), this.saveP300Accs);
-        uuid_key_dict[uuid] = {
-            'keys': groupId,
-            'keytype': keytype
         };
-      }
-    
-    saveP300Accs(sid, response) {
-        let resp_json = JSON.parse(response)
-        let accs = {
-            'p300': resp_json['p300'],
-            'score': resp_json['score']
-        }
-        uuid_accuracies[resp_json['uuid']] = accs;
+        this.update = this.update.bind(this);
     }
-
-    chooseKey() {
-        let bestRow;
-        let bestRowScore = -1;
-        let bestCol;
-        let bestColScore = -1;
-        for (var uuid in uuid_key_dict) {
-    
-            if (uuid_accuracies[uuid] != null) { // TODO: GHETTO! REMOVE!
-                if (uuid_key_dict[uuid]['keytype'] == 'row') {
-                    if (uuid_accuracies[uuid]['score'] > bestRowScore) {
-                        bestRowScore = uuid_accuracies[uuid]['score']
-                        bestRow = uuid_key_dict[uuid]['keys'];
-                    }
-                }
-                else if (uuid_key_dict[uuid]['keytype'] == 'column') {
-                    if (uuid_accuracies[uuid]['score'] > bestColScore) {
-                        bestColScore = uuid_accuracies[uuid]['score']
-                        bestCol = uuid_key_dict[uuid]['keys'];
-                    }
-                }
-            }
-        }
-        console.log(bestRow);
-        console.log(bestCol);
-        for (var r in Arrows.ROWS[bestRow]) {
-          for (var c in Arrows.COLS[bestCol]) {
-            if (r === c) {
-              console.log("Returning key: ", Arrows.BTN_VALS[c]);
-              return c;
-            }
-          }
-        }
-        return null;
-      }
 
     resetKeys() {
         const btnStates = Array(Arrows.BTN_VALS.length).fill("notSelected");
@@ -117,78 +39,83 @@ class App extends React.Component {
         this.setState({btnStates});
     }
 
-    writePhrase() {
-        const {statement, interval, lettersFound, rowOrder, 
-            colOrder, rowFound, colFound, displayText} = this.state;
-
-        this.resetKeys();
-
-        // Rows/cols shouldn't flash if they've already been found.
-        let flashRowsOrCols; // 1 to flash rows, 2 to flash cols
-        if (curRow >= rowOrder.length) flashRowsOrCols = 2;
-        else if (curCol >= colOrder.length) flashRowsOrCols = 1;
-        else flashRowsOrCols = Math.floor((Math.random() * 2) + 1);
-
-        if (flashRowsOrCols === 1) {
-            const rowId = rowOrder[curRow];
-            prevId = rowId;
-            curRow = curRow + 1;
-
-            for (let j = 0; j < Arrows.ROWS[rowId].length; j++) {
-                let currKeyId = Arrows.ROWS[rowId][j]
-                this.setBtnState(currKeyId, "selected");
-            }
-            this.sendFlashEvent(rowId, 'row');
-        }
-        else {
-            const colId = colOrder[curRow];
-            prevId = colId;
-            curCol = curCol + 1;
-
-            for (let j = 0; j < Arrows.COLS[colId].length; j++) {
-                let currKeyId = Arrows.COLS[colId][j]
-                this.setBtnState(currKeyId, "selected");
-            }
-            this.sendFlashEvent(colId, 'column');
-        }
-
-        // After all rows and columns have been flashed, determine letter 
-        if (curRow == Arrows.ROWS.length && curCol == Arrows.COLS.length) {
-            selectedKeyId = this.chooseKey();
-            console.log("Selected key: ", selectedKeyId);
-            if (selectedKeyId != null) {
-                this.setBtnState(selectedKeyId, 'chosen');
-
-                const newDisplay = displayText + Arrows.BTN_VALS[selectedKeyId];
-                this.setState({rowFound : false, colFound : false, 
-                displayText : newDisplay});
-
-                // Emitting an event to the socket to type letter.
-                // robot_socket.emit('typing', selectedKey.innerHTML);
-            }
-
-            // Reset indices
-            curRow = 0;
-            curCol = 0;
-
-            this.setState({rowOrder: getRandomArray(Arrows.ROWS.length)});
-            this.setState({colOrder: getRandomArray(Arrows.COLS.length)});
-        }
-    }
-    
-    componentDidMount() {
-        // const statement = prompt("What would you like to type?");
-        const statement = "(1!2$3)";
+    shuffleOrder(){
         const rowOrder = getRandomArray(Arrows.ROWS.length);
         const colOrder = getRandomArray(Arrows.COLS.length);
-        const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-        this.setState({interval, statement, rowOrder, colOrder});
+        this.setState({
+            rowOrder: rowOrder, 
+            colOrder: colOrder,
+            rowIndex: 0,
+            colIndex: 0,
+        });
+    }
+
+    handlePrediction(args){
+        if(args['p300']){
+            let curBtnIndex = this.getCurBtnIndex();
+            this.setBtnState(curBtnIndex, "chosen");
+            const curKey = Arrows.BTN_VALS[curBtnIndex];
+            console.log("P300 for key: " + curKey + " with score: " + args['score']);
+            this.shuffleOrder();
+        } else {
+            this.updateCurIndices();
+        }
+    }
+
+    getCurBtnIndex(){
+        const curRowOrder = this.state.rowOrder;
+        const curColOrder = this.state.colOrder;
+        const curRowIndex = this.state.rowIndex;
+        const curColIndex = this.state.colIndex;
+        const curRowIndexRand = curRowOrder[curRowIndex];
+        const curColIndexRand =  curColOrder[curColIndex];
+        return Arrows.ROWS[curRowIndexRand][curColIndexRand];
+    }
+
+    // Update rowIndex and colIndex in state
+    updateCurIndices(){
+        const curRowIndex = this.state.rowIndex;
+        const curColIndex = this.state.colIndex;
+
+        let newRowIndex = curRowIndex;
+        let newColIndex = curColIndex;
+        if(curColIndex === Arrows.COLS.length - 1) {
+            newColIndex = 0;
+            if(curRowIndex === Arrows.ROWS.length - 1) {
+                newRowIndex = 0;
+            } else {
+                newRowIndex ++;
+            }
+        } else {
+            newColIndex ++;
+        }
+        this.setState({
+            rowIndex: newRowIndex,
+            colIndex: newColIndex,
+        });
+    }
+
+    // Gets called every FLASHING_PAUSE interval
+    update() {
+        this.resetKeys();
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
+
+        sendPredictionEvent(client_socket, masterUUID(), this.handlePrediction.bind(this));
+    }
+
+    componentDidMount() {
+        const interval = setInterval(this.update, getFlashingPause());
+        this.setState({
+            interval: interval
+        });
+        this.shuffleOrder();
     }
 
     render() {
         return (
             <div className="instructionScreen">
-                <input type="text" className="displayInstruction" readOnly></input>
+                <h3 className="mindTypeColorText smallerText">Try to select a direction using your brain!</h3>
                 <Arrows btnStates={this.state.btnStates}/>
             </div>
         )

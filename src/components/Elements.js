@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../assets/mindtype_logo.png';
+import logo from '../assets/turret_logo.png';
 
 export function Button(props){
     return (

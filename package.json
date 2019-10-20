@@ -1,5 +1,5 @@
 {
-  "name": "keyboard",
+  "name": "NeuralTurret",
   "version": "0.1.0",
   "main": "main.js",
   "private": true,
@@ -13,7 +13,8 @@
     "uuid": "^3.3.2"
   },
   "scripts": {
-    "start": "react-scripts start & node ./src/robotServer.js",
+    "start": "react-scripts start",
+    "electron": "electron .",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

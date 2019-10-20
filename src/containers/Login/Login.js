@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Sockets from "../../helpers/getSockets";
 import {EmailInput, PasswordInput} from "../../components/FormFields";
 import {Button, Logo} from "../../components/Elements";
+import {Control, screens} from '../Control/Control';
 
 // Sockets 
 const client_socket = (new Sockets()).client_socket;
@@ -23,7 +24,7 @@ class Login extends React.Component {
       'password': this.state.passwordValue
     };
     //client_socket.emit("login", JSON.stringify(login), this.checkLogin);
-    this.props.loginHandler();
+    this.props.updateDisplay(screens.SELECTION);
   }
   
   checkLogin(sid, tf){
@@ -41,7 +42,7 @@ class Login extends React.Component {
         <EmailInput onChange={this.setState}/>
         <PasswordInput onChange={this.setState}/>
         <Button className="login" onClick={this.handleLoginClick} value="Login"/>
-        <Button className="back" onClick={this.props.goBack} value="Go Back"/>
+        <Button className="back" onClick={() => this.props.updateDisplay(screens.WELCOME)} value="Go Back"/>
       </div>
     )
   }
