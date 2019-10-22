@@ -1,6 +1,4 @@
 import React from 'react';
-import Arrows from '../../components/ArrowComponent'
-import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
 import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
 import Sockets from "../../helpers/getSockets";

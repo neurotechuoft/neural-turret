@@ -324,8 +324,7 @@ body {
 	border-bottom-right-radius: 2vmin;
 }
 
-
-.login, .sign-up, .back, .continueButton, .goToMindType {
+button {
   border: none;
   color: white;
   height: 8vh;
@@ -342,7 +341,7 @@ body {
   border-radius: 2vmin;
 }
 
-  .continueButton{
+.continueButton{
 	background-color: blue;
 	margin-bottom: 5vh;
 	margin-left: 0vw;
@@ -362,7 +361,6 @@ body {
 
 .sign-up {
   background-color: #F28585;
-  margin-top: 2vh;
 }
 
 .goToMindType{

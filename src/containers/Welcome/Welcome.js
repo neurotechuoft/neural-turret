@@ -18,7 +18,7 @@ export default function Welcome(props){
       />
       <Button 
         onClick={() => props.updateDisplay(screens.MORE_INFO)} 
-        className="help-screen" 
+        className="more-info" 
         value="More Info"
       />
     </div>

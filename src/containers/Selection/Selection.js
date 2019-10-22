@@ -23,7 +23,12 @@ export default class Selection extends React.Component {
         />
         <Button 
             onClick={() => this.props.updateDisplay(screens.MORE_INFO)} 
-            className="help-screen" 
+            className="more-info" 
+            value="More Info"
+        />
+        <Button 
+            onClick={() => this.props.updateDisplay(screens.MORE_INFO)} 
+            className="more-info" 
             value="More Info"
         />
       </div>
