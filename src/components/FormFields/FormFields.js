@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import './FormFields.css';
 
 export class EmailInput extends React.Component {
 	constructor(props) {

@@ -1,0 +1,11 @@
+.appScreen{
+	width: 100vw;
+}
+
+.mindTypeColorText {
+	color: white;
+	margin-top: 1.5vh;
+	width: 48vw;
+	font-size: 5vmin;
+	font-weight: lighter;
+}

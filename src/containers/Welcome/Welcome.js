@@ -1,20 +1,21 @@
 import React from 'react';
-import {Logo, Button} from '../../components/Elements';
+import {Logo, Button} from '../../components/Elements/Elements';
 import {Control, screens} from '../Control/Control';
+import './Welcome.css';
 
 export default function Welcome(props){
   return (
     <div>
       <Logo/>
       <Button 
-        onClick={() => props.updateDisplay(screens.LOGIN)} 
-        className="login" 
-        value="Login"
+          className="train" 
+          onClick={() => props.updateDisplay(screens.TRAIN)} 
+          value="Train the Turret"
       />
       <Button 
-        onClick={() => props.updateDisplay(screens.SIGNUP)} 
-        className="sign-up" 
-        value="Sign Up"
+          className="use-turret" 
+          onClick={() => props.updateDisplay(screens.APP)} 
+          value="Use the Turret"
       />
       <Button 
         onClick={() => props.updateDisplay(screens.MORE_INFO)} 

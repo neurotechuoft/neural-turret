@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Control, screens} from '../Control/Control';
-import {Button} from "../../components/Elements";
+import {Button} from "../../components/Elements/Elements";
+import './MoreInfo.css';
 
 export default function MoreInfo(props) {
   return (
@@ -30,7 +31,7 @@ export default function MoreInfo(props) {
 
       </p>
       <p className="text"> Now you know how it works, go try it out! </p>
-      <center><Button className="back" onClick={props.goBack} value="Go Back"/></center>
+      <Button className="back" onClick={props.goBack} value="Go Back"/>
     </div>
   )
 }

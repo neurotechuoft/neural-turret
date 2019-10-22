@@ -1,0 +1,25 @@
+.button {
+    color: white;
+    height: 8vh;
+    width: 30vw;
+    font-size: 16px;
+    margin-left: 35vw;
+    margin-top: 5vh;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 2vmin;
+  }
+  
+.continueButton{
+    background-color: blue;
+    margin-bottom: 5vh;
+    margin-left: 0vw;
+}
+
+.logo{
+    margin-left: 35vw; 
+    margin-top: 2vh;
+    width: 30vw;
+}
+

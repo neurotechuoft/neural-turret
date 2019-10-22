@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import Arrows from "../../components/ArrowComponent";
+import Arrows from "../KeyComponent/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
-import { sendPredictionEvent, masterUUID } from '../../helpers/P300Communication';
 import Sockets from "../../helpers/getSockets";
-import {Control, screens} from '../Control/Control';
+import { Button } from '../Elements/Elements';
 import './App.css';
-import './EntrySizes.css';
 
 // Sockets
 const client_socket = (new Sockets()).client_socket; // Receive P300 predictions
@@ -58,9 +56,10 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <div className="instructionScreen">
-                {this.props.value}
+            <div className="appScreen">
+                <span className="mindTypeColorText">{this.props.value}</span>
                 <Arrows btnStates={this.state.btnStates}/>
+                <Button className="back" onClick={this.props.goBack} value="Go Back"/>
             </div>
         )
     }
