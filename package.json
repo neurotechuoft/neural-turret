@@ -16,7 +16,7 @@
     "electron": "electron .",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
+    "eject": "react-scripts eject"
   },
   "browserslist": [
     ">0.2%",
