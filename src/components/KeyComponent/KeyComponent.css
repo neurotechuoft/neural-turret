@@ -1,0 +1,31 @@
+.selected {
+    color: white;
+    background-color: #3da8c4;
+  }
+  
+.notSelected {
+    color: #52A0B4;
+    background-color: white;
+}
+
+.chosen {
+    color: white;
+    background-color: red;
+    font-weight: bold;
+}
+
+.key {
+    width: 30%;
+    height: 50%;
+    margin: 5px;
+}
+
+.userInput {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 60vw;
+    height: 60vh;
+    margin: auto;
+    justify-content: center;
+}

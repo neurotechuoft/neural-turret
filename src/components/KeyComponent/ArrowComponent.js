@@ -28,7 +28,7 @@ class Arrows extends Component {
     render() {
         return (
             <div className="userInput">
-                <Key value={Arrows.BTN_VALS[0]} btnState={this.props.btnStates[0]} keyFormat="topLeft"/>
+                <Key value={Arrows.BTN_VALS[0]} btnState={this.props.btnStates[0]}/>
                 <Key value={Arrows.BTN_VALS[1]} btnState={this.props.btnStates[1]} />
                 <Key value={Arrows.BTN_VALS[2]} btnState={this.props.btnStates[2]} />
                 <br />

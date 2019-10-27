@@ -1,5 +1,4 @@
 import io from "socket.io-client";
-import { sendTrainingFlashEvent, masterUUID } from "./P300Communication";
 
 export default class Sockets {
     constructor() {
@@ -11,17 +10,11 @@ export default class Sockets {
                 "transports" : ["websocket"]
             };
 
-            // this.nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
-            this.client_socket = io('http://localhost:8001', connectionOptions); // Socket to connect to P300Client.
-            this.robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
+            this.client_socket = io('http://localhost:8002', connectionOptions); // Socket to connect to P300Client.
+            //this.robot_socket = io('http://localhost:8003'); // Socket to control Turret
 
-            sendTrainingFlashEvent(this.client_socket, masterUUID(), true);
-            
-            
             Sockets.instance = this;
         }
         return Sockets.instance
     }
 }
-
-// export default Sockets;
