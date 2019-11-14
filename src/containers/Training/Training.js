@@ -1,13 +1,8 @@
 import React from 'react';
 import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
 import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
-import Sockets from "../../helpers/getSockets";
-import {Control, screens} from '../Control/Control';
 import App from '../../components/App/App';
 import './Training.css';
-
-// Sockets
-const client_socket = (new Sockets()).client_socket;
 
 export default class Training extends React.Component {
 
@@ -19,6 +14,7 @@ export default class Training extends React.Component {
             lettersFound : 0,
         };
         this.statement = '↖↑↗→';
+        this.handleKeySelection = this.handleKeySelection.bind(this);
     }
 
     render() {
@@ -30,16 +26,26 @@ export default class Training extends React.Component {
         </div>);
         return (
             <App
-                updateCallback={(selection, handleResponse) => sendTrainingFlashEvent(client_socket, masterUUID(), this.isP300(selection), handleResponse)}
-                isChosen={(selection, args) => this.isP300(selection)}
-                handleSelection={(selection, args) => {this.handleSelection(selection)}}
+                handleKey={this.handleKeySelection}
                 value={element}
                 goBack={this.props.goBack}
             />
         )
     }
 
-    handleSelection(selection){
+    handleKeySelection(selectedKey, socket, chooseKey, notChooseKey){
+        const curGoal = this.statement[this.state.lettersFound];
+        let isP300 = selectedKey === curGoal;
+        sendTrainingFlashEvent(socket, masterUUID(), isP300, (ret) => {console.log("here", ret)});
+        if(isP300){
+            chooseKey();
+        } else{
+            notChooseKey();
+        }
+    }
+
+    handleKeyChosen(selection){
+        console.log("received: ", selection);
         const newDisplay = this.state.displayText + selection;
         this.setState({
             displayText : newDisplay, 
@@ -49,10 +55,5 @@ export default class Training extends React.Component {
         if (this.state.lettersFound === this.statement.length) {
             setTimeout(this.props.goBack, getNextInstrPause());
         }
-    }
-
-    isP300(curKey) {
-        const curGoal = this.statement[this.state.lettersFound];
-        return curKey === curGoal;
     }
 }

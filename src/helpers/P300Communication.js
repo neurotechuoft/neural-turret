@@ -16,9 +16,12 @@ export function sendTrainingFlashEvent(client_socket, userId, p300, callback) {
             uuid: "test",
             acc: "0.5"
         });
+    } else{
+        // Upon server respose, callback will execute
+        console.log("sent");
+        client_socket.once("train", callback);
+        client_socket.emit("train", JSON.stringify(json));
     }
-    // Upon server respose, callback will execute
-    client_socket.emit("train", JSON.stringify(json), callback);
 }
 
 export function sendPredictionEvent(client_socket, userId, callback) {
@@ -34,9 +37,11 @@ export function sendPredictionEvent(client_socket, userId, callback) {
             p300: randomP300(),
             score: "0.4"
         });
+    }else{
+        // Upon server respose, callback will execute
+        client_socket.once("predict", callback);
+        client_socket.emit("predict", JSON.stringify(json));
     }
-    // Upon server respose, callback will execute
-    client_socket.emit("predict", JSON.stringify(json), callback);
 }
 
 export function masterUUID() {

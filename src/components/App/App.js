@@ -6,10 +6,6 @@ import Sockets from "../../helpers/getSockets";
 import { Button } from '../Elements/Elements';
 import './App.css';
 
-// Sockets
-const client_socket = (new Sockets()).client_socket; // Receive P300 predictions
-const robotSocket = (new Sockets()).robot_socket;  // Control the Turret
-
 export default class App extends React.Component {
     constructor(props) {
         super(props);
@@ -23,6 +19,9 @@ export default class App extends React.Component {
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
         };
         this.update = this.update.bind(this);
+        this.handleKeyChosen = this.handleKeyChosen.bind(this);
+        this.handleKeyNotChosen = this.handleKeyNotChosen.bind(this);
+        this.client_socket = (new Sockets()).client_socket;
     }
 
     componentDidMount() {
@@ -37,21 +36,29 @@ export default class App extends React.Component {
         clearInterval(this.state.interval);
     }
 
+    // Set the current key as highlighted and return it's index
+    selectCurrentKey(){
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
+        return curBtnIndex;
+    }
+
     // Gets called every FLASHING_PAUSE interval
     update() {
         this.resetKeys();
-        const curBtnIndex = this.getCurBtnIndex();
-        this.setBtnState(curBtnIndex, "selected");
+        let curBtnIndex = this.selectCurrentKey();
         const curKey = Arrows.BTN_VALS[curBtnIndex];
-        this.props.updateCallback(curKey, (args) => {
-            if(this.props.isChosen(curKey, args)){
-                this.setBtnState(curBtnIndex, "chosen");
-                this.props.handleSelection(curKey, args);
-                this.shuffleOrder();
-            } else {
-                this.updateCurIndices();
-            }
-        });
+        this.props.handleKey(curKey, this.client_socket, this.handleKeyChosen, this.handleKeyNotChosen);
+    }
+
+    handleKeyChosen(){
+        let curBtnIndex = this.selectCurrentKey();
+        this.setBtnState(curBtnIndex, "chosen");
+        this.shuffleOrder();
+    }
+
+    handleKeyNotChosen(){
+        this.updateCurIndices();
     }
 
     render() {
