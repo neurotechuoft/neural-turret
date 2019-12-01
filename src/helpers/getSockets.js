@@ -11,7 +11,7 @@ export default class Sockets {
             };
 
             this.client_socket = io('http://localhost:8002', connectionOptions); // Socket to connect to P300Client.
-            //this.robot_socket = io('http://localhost:8003'); // Socket to control Turret
+            // this.robot_socket = io('http://localhost:8003'); // Socket to control Turret
 
             Sockets.instance = this;
         }

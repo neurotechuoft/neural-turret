@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Arrows from "../KeyComponent/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
-import Sockets from "../../helpers/getSockets";
+import { getFlashingPause } from '../../helpers/intervals';
 import { Button } from '../Elements/Elements';
 import './App.css';
 
@@ -21,7 +20,6 @@ export default class App extends React.Component {
         this.update = this.update.bind(this);
         this.handleKeyChosen = this.handleKeyChosen.bind(this);
         this.handleKeyNotChosen = this.handleKeyNotChosen.bind(this);
-        this.client_socket = (new Sockets()).client_socket;
     }
 
     componentDidMount() {
@@ -36,19 +34,31 @@ export default class App extends React.Component {
         clearInterval(this.state.interval);
     }
 
-    // Set the current key as highlighted and return it's index
-    selectCurrentKey(){
-        const curBtnIndex = this.getCurBtnIndex();
-        this.setBtnState(curBtnIndex, "selected");
-        return curBtnIndex;
-    }
-
     // Gets called every FLASHING_PAUSE interval
     update() {
         this.resetKeys();
         let curBtnIndex = this.selectCurrentKey();
         const curKey = Arrows.BTN_VALS[curBtnIndex];
-        this.props.handleKey(curKey, this.client_socket, this.handleKeyChosen, this.handleKeyNotChosen);
+        this.props.onUpdate(curKey, this.handleKeyChosen, this.handleKeyNotChosen);
+    }
+    
+    render() {
+        return (
+            <div className="appScreen">
+                <span className="mindTypeColorText">{this.props.children}</span>
+                <Arrows btnStates={this.state.btnStates}/>
+                <Button className="back" onClick={this.props.goBack} value="Go Back"/>
+            </div>
+        )
+    }
+
+    // HELPERS //
+
+    // Set the current key as highlighted and return it's index
+    selectCurrentKey(){
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
+        return curBtnIndex;
     }
 
     handleKeyChosen(){
@@ -59,16 +69,6 @@ export default class App extends React.Component {
 
     handleKeyNotChosen(){
         this.updateCurIndices();
-    }
-
-    render() {
-        return (
-            <div className="appScreen">
-                <span className="mindTypeColorText">{this.props.value}</span>
-                <Arrows btnStates={this.state.btnStates}/>
-                <Button className="back" onClick={this.props.goBack} value="Go Back"/>
-            </div>
-        )
     }
 
     resetKeys() {
