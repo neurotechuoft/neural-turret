@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from '../../assets/turret_logo.png';
 import './Elements.css';
+import PropTypes from 'prop-types';
 
 export function Button(props){
     return (
@@ -15,6 +16,16 @@ export function Button(props){
 
 export function Logo(props){
     return (
-        <img src={logo} className="logo"/>
+        <img src={props.logo? props.logo: logo} className="logo"/>
     );
 }
+
+Button.propTypes = {
+    className: PropTypes.string,
+    onClick: PropTypes.func.isRequired,
+    value: PropTypes.string,
+};
+
+Logo.propTypes = {
+    logo: PropTypes.object
+};

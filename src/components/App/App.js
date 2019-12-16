@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Arrows from "../KeyComponent/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
-import Sockets from "../../helpers/getSockets";
+import { getFlashingPause } from '../../helpers/intervals';
 import { Button } from '../Elements/Elements';
+import PropTypes from 'prop-types';
 import './App.css';
-
-// Sockets
-const client_socket = (new Sockets()).client_socket; // Receive P300 predictions
-const robotSocket = (new Sockets()).robot_socket;  // Control the Turret
 
 export default class App extends React.Component {
     constructor(props) {
@@ -120,3 +116,11 @@ export default class App extends React.Component {
         });
     }
 }
+
+App.propTypes = {
+    updateCallback: PropTypes.func.isRequired,
+    isChosen: PropTypes.func.isRequired,
+    handleSelection: PropTypes.func.isRequired,
+    value: PropTypes.string.isRequired,
+    goBack: PropTypes.func.isRequired,
+  };

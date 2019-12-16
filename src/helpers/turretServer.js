@@ -11,11 +11,11 @@ var myPort = new SerialPort(portName, {
 
 const parser = myPort.pipe(new Readline({delimiter: '\n'}));
 myPort.on('open', openPort);
+
 parser.on('data', data=>{
 	console.log('data is:', data);
 });
-​
-​
+
 function openPort() {
     console.log('port open');
 

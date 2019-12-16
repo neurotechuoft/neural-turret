@@ -1,5 +1,6 @@
 import React from 'react';
 import './KeyComponent.css';
+import PropTypes from 'prop-types';
 
 function Key(props) {
     return (
@@ -8,3 +9,8 @@ function Key(props) {
 }
 
 export default Key;
+
+Key.propTypes = {
+    btnState: PropTypes.string,
+    value: PropTypes.string
+  };

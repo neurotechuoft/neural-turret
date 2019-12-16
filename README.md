@@ -21,5 +21,8 @@ Demo of a P300-controlled turret.
 - The Muse server receives Muse EEG data through the LSL. You can stream Muse data to this layer using BlueMuse 
 - The Muse server streams data to the P300 client (localhost:8001)
 
+## Run Tests
+- To run linter ONLY, run "npm run pretest"
+
 
 **If you are having trouble with any of the steps, please submit an issue or contact us through Slack :)**
