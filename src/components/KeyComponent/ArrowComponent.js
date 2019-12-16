@@ -4,10 +4,6 @@ import PropTypes from 'prop-types';
 
 class Arrows extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     static get BTN_VALS() {
         return ["↖", "↑", "↗",
                 "←", "o", "→"]
