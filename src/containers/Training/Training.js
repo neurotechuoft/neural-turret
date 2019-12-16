@@ -1,9 +1,10 @@
 import React from 'react';
-import { getFlashingPause, getNextInstrPause } from '../../helpers/intervals';
+import { getNextInstrPause } from '../../helpers/intervals';
 import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
+import Sockets from "../../helpers/getSockets";
 import App from '../../components/App/App';
 import './Training.css';
-import Sockets from '../../helpers/getSockets';
+import PropTypes from 'prop-types';
 
 const socket = (new Sockets()).client_socket;
 export default class Training extends React.Component {
@@ -41,9 +42,19 @@ export default class Training extends React.Component {
     }
 
     render() {
+        let element = (           
+        <div> 
+            <h3>Let&apos;s try to select the following character by focusing on it on the board!</h3>
+            <h4 className="goal">{this.statement[this.state.lettersFound]}</h4>
+            <h4>History: {this.state.displayText}</h4>
+        </div>);
         return (
             <App
-                onUpdate={this.onUpdate}
+                updateCallback={(selection, handleResponse) => 
+                    sendTrainingFlashEvent(client_socket, masterUUID(), this.isP300(selection), handleResponse)}
+                isChosen={(selection) => this.isP300(selection)}
+                handleSelection={(selection) => {this.handleSelection(selection)}}
+                value={element}
                 goBack={this.props.goBack}
             > 
                 <div> 
@@ -70,3 +81,7 @@ export default class Training extends React.Component {
         setTimeout(this.props.goBack, getNextInstrPause());
     }
 }
+
+Training.propTypes = {
+    goBack: PropTypes.func.isRequired
+  };

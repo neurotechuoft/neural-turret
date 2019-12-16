@@ -3,6 +3,7 @@ import Arrows from "../KeyComponent/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause } from '../../helpers/intervals';
 import { Button } from '../Elements/Elements';
+import PropTypes from 'prop-types';
 import './App.css';
 
 export default class App extends React.Component {
@@ -127,3 +128,11 @@ export default class App extends React.Component {
         });
     }
 }
+
+App.propTypes = {
+    updateCallback: PropTypes.func.isRequired,
+    isChosen: PropTypes.func.isRequired,
+    handleSelection: PropTypes.func.isRequired,
+    value: PropTypes.string.isRequired,
+    goBack: PropTypes.func.isRequired,
+  };

@@ -17,6 +17,7 @@
     "prestart": "npm install",
     "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron . \"",
     "build": "react-scripts build",
+    "pretest": "npm install --only=dev && eslint . --fix",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
@@ -27,6 +28,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "electron": "^4.1.0"
+    "eslint-plugin-react": "^7.16.0"
   }
 }
