@@ -16,7 +16,7 @@ export function Button(props){
 
 export function Logo(props){
     return (
-        <img src={props.logo? props.logo: logo} className="logo"/>
+        <img src={props.logo? props.logo: logo} className="logo" alt="logo" />
     );
 }
 
