@@ -1,30 +1,53 @@
 import React from 'react';
 import App from "../../components/App/App"
 import { sendPredictionEvent, masterUUID } from '../../helpers/P300Communication';
-import Sockets from "../../helpers/getSockets";
 import './Turret.css';
+import Sockets from '../../helpers/getSockets';
 
-// Sockets
-const client_socket = (new Sockets()).client_socket;
+const socketPredict = (new Sockets()).client_socket;
+const socketRobot = (new Sockets()).client_socket; // Change to robot_socket later
 
 export default class Turret extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
+            displayText: ""
         };
+        this.handlePrediction = this.handlePrediction.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
+    }
+
+    onUpdate(selectedKey, handleChosen, handleNotChosen){
+        sendPredictionEvent(socketPredict, masterUUID(), (data)=>{this.handlePrediction(data, selectedKey, handleChosen, handleNotChosen)});
     }
     
     render() {
-        let element = (<h3>Try to select a direction using your brain!</h3>);
         return (
             <App
-                updateCallback={(selection, handleResponse) => sendPredictionEvent(client_socket, masterUUID(), handleResponse)}
-                isChosen={(selection, args) => args['p300']}    
-                handleSelection={(selection, args) => {console.log("P300 for key: " + selection + " with score: " + args['score'])}}
-                value={element}
+                onUpdate={this.onUpdate}
                 goBack={this.props.goBack}
-            />
+            >
+                <h3>Try to select a direction using your brain!</h3>
+                <h4>History: {this.state.displayText}</h4>
+            </App>
         )
+    }
+
+    // HELPERS //
+
+    // data is return value from Neurostack Client predict event
+    handlePrediction(data, selectedKey, handleChosen, handleNotChosen){
+        if(data.p300){
+            console.log(selectedKey, " chosen. confidence: ", data.score*100, "%");
+            const newDisplay = this.state.displayText + selectedKey;
+            this.setState({
+                displayText : newDisplay
+            });
+            handleChosen();
+        } else {
+            console.log(selectedKey, " NOT chosen. confidence: ", data.score*100, "%");
+            handleNotChosen();
+        }
     }
     
 }
