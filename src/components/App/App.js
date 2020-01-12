@@ -38,9 +38,18 @@ export default class App extends React.Component {
     // Gets called every FLASHING_PAUSE interval
     update() {
         this.resetKeys();
-        let curBtnIndex = this.selectCurrentKey();
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
         const curKey = Arrows.BTN_VALS[curBtnIndex];
-        this.props.onUpdate(curKey, this.handleKeyChosen, this.handleKeyNotChosen);
+        this.props.updateCallback(curKey, (args) => {
+            if(this.props.isChosen(curKey, args)){
+                this.setBtnState(curBtnIndex, "chosen");
+                this.props.handleSelection(curKey, args);
+                this.shuffleOrder();
+            } else {
+                this.updateCurIndices();
+            }
+        });
     }
     
     render() {
