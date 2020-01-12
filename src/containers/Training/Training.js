@@ -51,7 +51,7 @@ export default class Training extends React.Component {
                 goBack={this.props.goBack}
             > 
                 <div> 
-                    <h3>Let's try to select the following character by focusing on it on the board!</h3>
+                    <h3>Let&apos;s try to select the following character by focusing on it on the board!</h3>
                     <h4 className="goal">{this.statement[this.state.lettersFound]}</h4>
                     <h4>History: {this.state.displayText}</h4>
                     <h5>Accuracy: {this.state.accuracy ? this.state.accuracy*100 + "%" : "-"}</h5>

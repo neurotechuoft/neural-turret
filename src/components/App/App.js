@@ -144,4 +144,5 @@ App.propTypes = {
     handleSelection: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
     goBack: PropTypes.func.isRequired,
+    children: PropTypes.node
   };
