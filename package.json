@@ -1,19 +1,21 @@
 {
   "name": "NeuralTurret",
   "version": "0.1.0",
-  "main": "main.js",
+  "main": "electron.js",
   "private": true,
   "dependencies": {
+    "concurrently": "^5.0.1",
     "electron": "^2.0.8",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-scripts": "^2.1.8",
     "socket.io": "2.1.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "wait-on": "^3.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "electron": "electron .",
+    "prestart": "npm install",
+    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron . \"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
