@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import Key from './KeyComponent';
+import PropTypes from 'prop-types';
 
 class Arrows extends Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     static get BTN_VALS() {
         return ["↖", "↑", "↗",
@@ -41,3 +38,7 @@ class Arrows extends Component {
 }
 
 export default Arrows;
+
+Arrows.propTypes = {
+    btnStates: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired
+  };

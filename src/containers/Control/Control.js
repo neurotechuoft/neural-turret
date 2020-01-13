@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Welcome from '../Welcome/Welcome';
 import MoreInfo from '../MoreInfo/MoreInfo';
 import Training from '../Training/Training';

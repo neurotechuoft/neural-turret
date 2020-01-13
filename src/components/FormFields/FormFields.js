@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './FormFields.css';
+import PropTypes from 'prop-types';
 
 export class EmailInput extends React.Component {
 	constructor(props) {
@@ -63,3 +64,15 @@ export class NameInput extends React.Component {
         </input>);
     }
 }
+
+EmailInput.propTypes = {
+    onChange: PropTypes.func.isRequired
+};
+
+PasswordInput.propTypes = {
+    onChange: PropTypes.func.isRequired
+};
+
+NameInput.propTypes = {
+    onChange: PropTypes.func.isRequired
+};

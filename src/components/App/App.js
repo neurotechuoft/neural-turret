@@ -3,6 +3,7 @@ import Arrows from "../KeyComponent/ArrowComponent";
 import { getRandomArray } from '../../helpers/shuffle';
 import { getFlashingPause } from '../../helpers/intervals';
 import { Button } from '../Elements/Elements';
+import PropTypes from 'prop-types';
 import './App.css';
 
 export default class App extends React.Component {
@@ -37,9 +38,18 @@ export default class App extends React.Component {
     // Gets called every FLASHING_PAUSE interval
     update() {
         this.resetKeys();
-        let curBtnIndex = this.selectCurrentKey();
+        const curBtnIndex = this.getCurBtnIndex();
+        this.setBtnState(curBtnIndex, "selected");
         const curKey = Arrows.BTN_VALS[curBtnIndex];
-        this.props.onUpdate(curKey, this.handleKeyChosen, this.handleKeyNotChosen);
+        this.props.updateCallback(curKey, (args) => {
+            if(this.props.isChosen(curKey, args)){
+                this.setBtnState(curBtnIndex, "chosen");
+                this.props.handleSelection(curKey, args);
+                this.shuffleOrder();
+            } else {
+                this.updateCurIndices();
+            }
+        });
     }
     
     render() {
@@ -127,3 +137,12 @@ export default class App extends React.Component {
         });
     }
 }
+
+App.propTypes = {
+    updateCallback: PropTypes.func.isRequired,
+    isChosen: PropTypes.func.isRequired,
+    handleSelection: PropTypes.func.isRequired,
+    value: PropTypes.string.isRequired,
+    goBack: PropTypes.func.isRequired,
+    children: PropTypes.node
+  };
