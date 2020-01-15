@@ -1,11 +1,9 @@
 import React from 'react';
-import App from "../../components/App/App"
-import Sockets from "../../helpers/getSockets";
-import { sendPredictionEvent, masterUUID } from '../../helpers/P300Communication';
+import App from "../../components/App/App";
+import Arrows from "../../components/KeyComponent/ArrowComponent";
+import { sendPredictionEvent, masterUUID, moveTurret } from '../../helpers/SocketCommunication';
 import './Turret.css';
 import PropTypes from 'prop-types';
-
-const client_socket = (new Sockets()).client_socket;
 
 export default class Turret extends React.Component {
     constructor(props) {
@@ -21,7 +19,7 @@ export default class Turret extends React.Component {
         return (
             <App
                 updateCallback={(selection, handleResponse) => 
-                    sendPredictionEvent(client_socket, masterUUID(), handleResponse)}
+                    sendPredictionEvent(masterUUID(), handleResponse)}
                 isChosen={(selection, args) => args['p300']}    
                 handleSelection={this.handleSelection}
                 handleData={this.handleData}
@@ -46,6 +44,7 @@ export default class Turret extends React.Component {
         this.setState({
             displayText : newDisplay
         });
+        moveTurret(Arrows.ANGLE(selection));
     }
     
 }

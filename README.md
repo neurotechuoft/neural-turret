@@ -4,7 +4,9 @@ Demo of a P300-controlled turret.
 ## Setting Up
 
 1. Clone this repo locally. 
-2. run "npm start" and wait. 
+2. Run neurostack client locally on port :8002
+3. run "npm run robotserver"
+4. in a new terminal, run "npm start" and wait. 
 
 ## Developer Notes
 

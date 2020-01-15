@@ -1,12 +1,9 @@
 import React from 'react';
 import { getNextInstrPause } from '../../helpers/intervals';
-import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
-import Sockets from "../../helpers/getSockets";
+import { sendTrainingFlashEvent, masterUUID } from '../../helpers/SocketCommunication';
 import App from '../../components/App/App';
 import './Training.css';
 import PropTypes from 'prop-types';
-
-const client_socket = (new Sockets()).client_socket;
 export default class Training extends React.Component {
     constructor(props) {
         super(props);
@@ -26,7 +23,7 @@ export default class Training extends React.Component {
         return (
             <App
                 updateCallback={(selection, handleResponse) => 
-                    sendTrainingFlashEvent(client_socket, masterUUID(), this.isP300(selection), handleResponse)}
+                    sendTrainingFlashEvent(masterUUID(), this.isP300(selection), handleResponse)}
                 isChosen={(selection) => this.isP300(selection)}
                 handleSelection={(selection) => {this.handleSelection(selection)}}
                 handleData={this.handleData}

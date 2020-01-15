@@ -11,9 +11,10 @@ export default class Sockets {
                 "timeout" : 10000,                  
                 "transports" : ["websocket"]
             };
-
-            this.client_socket = io('http://localhost:8002', connectionOptions); // Socket to connect to P300Client.
-            // this.robot_socket = io('http://localhost:8003'); // Socket to control Turret
+            // Socket to connect to P300Client.
+            this.client_socket = io('http://localhost:8002', connectionOptions);
+            // Socket to connect to Robot / Turret Server
+            this.robot_socket = io('http://localhost:8003', connectionOptions);
 
             Sockets.instance = this;
         }

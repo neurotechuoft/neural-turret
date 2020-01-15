@@ -3,14 +3,13 @@ import Key from './KeyComponent';
 import PropTypes from 'prop-types';
 
 class Arrows extends Component {
-
     static get BTN_VALS() {
         return ["↖", "↑", "↗",
                 "←", "o", "→"]
     }
 
     static get BTN_ANGLES() {
-        return [45, 90, 135,
+        return [135, 90, 45,
                 180, 90, 0]
     }
 
@@ -20,6 +19,18 @@ class Arrows extends Component {
 
     static get COLS() {
         return [[0,3], [1,4], [2,5]]
+    }
+
+    static ANGLE(arrow) {
+        let arrowAngles = {
+            "↖" : 135, 
+            "↑" : 90,
+            "↗" : 45,
+            "←" : 180,
+            "o" : 90,
+            "→" : 0
+        };
+        return arrowAngles[arrow];
     }
 
     render() {
