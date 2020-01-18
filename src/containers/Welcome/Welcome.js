@@ -1,7 +1,8 @@
 import React from 'react';
 import {Logo, Button} from '../../components/Elements/Elements';
-import {Control, screens} from '../Control/Control';
+import {screens} from '../Control/Control';
 import './Welcome.css';
+import PropTypes from 'prop-types';
 
 export default function Welcome(props){
   return (
@@ -29,3 +30,7 @@ export default function Welcome(props){
     </div>
   );
 }
+
+Welcome.propTypes = {
+  updateDisplay: PropTypes.func.isRequired
+};
