@@ -14,13 +14,13 @@ export default function Welcome(props){
           onClick={() => props.updateDisplay(screens.TRAIN)} 
           value="Train the Turret"
       />
-      <div class="divider" />
+      <div className="divider" />
       <Button 
           className="use-turret" 
           onClick={() => props.updateDisplay(screens.APP)} 
           value="Use the Turret"
       />
-      <div class="divider" />
+      <div className="divider" />
       <Button 
         onClick={() => props.updateDisplay(screens.MORE_INFO)} 
         className="more-info" 

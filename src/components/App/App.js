@@ -142,7 +142,6 @@ App.propTypes = {
     updateCallback: PropTypes.func.isRequired,
     isChosen: PropTypes.func.isRequired,
     handleSelection: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
     goBack: PropTypes.func.isRequired,
     children: PropTypes.node
   };
