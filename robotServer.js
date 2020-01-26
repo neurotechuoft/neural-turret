@@ -4,17 +4,24 @@ const io = require('socket.io')(8003) // FileServer will be run on http://localh
 
 let portName = process.argv[2];
 
-let myPort = new SerialPort(portName, {
-	baudRate:9600
-});
+let myPort;
 
-myPort.on('open', ()=>{console.log('Robot port open')});
-
+try{
+    myPort = new SerialPort(portName, {
+        baudRate:9600
+    });
+    
+    myPort.on('open', ()=>{console.log('Robot port open')});
+} catch(err) {
+    console.log("Turret port unable to open: ", portName);
+}
 
 io.on('connection', (socket) => {
     socket.on('data', data => {
         console.log("Received: ", data);
-        myPort.write(data);
-        myPort.write('d');
+        if(myPort){
+            myPort.write(data);
+            myPort.write('d');
+        }
     });
 });
