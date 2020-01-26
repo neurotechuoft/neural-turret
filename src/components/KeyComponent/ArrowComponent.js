@@ -8,11 +8,6 @@ class Arrows extends Component {
                 "←", "o", "→"]
     }
 
-    static get BTN_ANGLES() {
-        return [135, 90, 45,
-                180, 90, 0]
-    }
-
     static get ROWS() {
         return [[0,1,2], [3,4,5]]
     }
@@ -27,7 +22,7 @@ class Arrows extends Component {
             "↑" : 90,
             "↗" : 45,
             "←" : 180,
-            "o" : 90,
+            "o" : -1,
             "→" : 0
         };
         return arrowAngles[arrow];

@@ -19,7 +19,7 @@ export default class Turret extends React.Component {
         return (
             <App
                 updateCallback={(selection, handleResponse) => 
-                    sendPredictionEvent(masterUUID(), handleResponse)}
+                    sendPredictionEvent(selection, masterUUID(), handleResponse)}
                 isChosen={(selection, args) => args['p300']}    
                 handleSelection={this.handleSelection}
                 handleData={this.handleData}
@@ -44,7 +44,15 @@ export default class Turret extends React.Component {
         this.setState({
             displayText : newDisplay
         });
-        moveTurret(Arrows.ANGLE(selection));
+        let angle = Arrows.ANGLE(selection);
+        if (angle === -1){
+            angle = 's';
+        } else if (angle === 180) {
+            angle = angle.toString();
+        } else {
+            angle = (angle + 15).toString();
+        }
+        moveTurret(angle);
     }
     
 }

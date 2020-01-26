@@ -15,13 +15,12 @@
     "wait-on": "^3.3.0"
   },
   "scripts": {
-    "prestart": "npm install",
     "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron . \"",
     "build": "react-scripts build",
     "pretest": "npm install && eslint . --fix",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "robotserver": "node robotServer.js COM4"
+    "robotserver": "node robotServer.js COM6"
   },
   "browserslist": [
     ">0.2%",

@@ -8,13 +8,8 @@ let myPort = new SerialPort(portName, {
 	baudRate:9600
 });
 
-const parser = myPort.pipe(new Readline({delimiter: '\n'}));
-
 myPort.on('open', ()=>{console.log('Robot port open')});
 
-parser.on('data', data=>{
-	console.log('Sending Robot Port data: ', data);
-});
 
 io.on('connection', (socket) => {
     socket.on('data', data => {
