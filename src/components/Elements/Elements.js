@@ -9,7 +9,9 @@ export function Button(props){
             className={props.className + " button"} 
             onClick={props.onClick}
         >
+        <span>
             {props.value}
+        </span>
         </button>
     );
 }

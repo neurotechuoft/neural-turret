@@ -1,9 +1,28 @@
+h1 {
+	color: #0d7377;
+}
+
+h2 {
+	color: #0d7377;
+}
+
+p {
+	color: rgb(200, 200, 200);
+	text-align: justify;
+	text-justify: inter-word;
+	padding-left: 100px;
+	padding-right: 100px;
+	
+}
+
+
+
 .redText {
 	color: red;
 	font-weight: bold;
 }
 
 .blueText {
-	color: blue;
+	color: #42dee1;
 	font-weight: bold;
 }
