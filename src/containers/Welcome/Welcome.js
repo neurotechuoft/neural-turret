@@ -8,21 +8,25 @@ export default function Welcome(props){
   return (
     <div>
       <Logo/>
+      <div id='btn-container'>
       <Button 
           className="train" 
           onClick={() => props.updateDisplay(screens.TRAIN)} 
           value="Train the Turret"
       />
+      <div className="divider" />
       <Button 
           className="use-turret" 
           onClick={() => props.updateDisplay(screens.APP)} 
           value="Use the Turret"
       />
+      <div className="divider" />
       <Button 
         onClick={() => props.updateDisplay(screens.MORE_INFO)} 
         className="more-info" 
         value="More Info"
       />
+      </div>
     </div>
   );
 }
