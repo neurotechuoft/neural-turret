@@ -1,9 +1,13 @@
+import Sockets from "./getSockets";
+const client_socket = (new Sockets()).client_socket;
+const robot_socket = (new Sockets()).robot_socket;
+
 function randomP300() {
     // 10% chance of P300
     return Math.floor(Math.random() * 10) === 0;  
 }
 
-export function sendTrainingFlashEvent(client_socket, userId, p300, callback) {
+export function sendTrainingFlashEvent(userId, p300, callback) {
     let timestamp = Date.now() / 1000.0;
     let json = {
         'uuid': userId,
@@ -20,11 +24,13 @@ export function sendTrainingFlashEvent(client_socket, userId, p300, callback) {
         // Upon server respose, callback will execute
         console.log("sent");
         client_socket.once("train", callback);
-        client_socket.emit("train", JSON.stringify(json));
+        client_socket.emit("train", JSON.stringify(json));        
+        client_socket.once("generate_uuid", (data)=>{console.log(data)});
+        client_socket.emit("generate_uuid", " lashf");
     }
 }
 
-export function sendPredictionEvent(client_socket, userId, callback) {
+export function sendPredictionEvent(selection, userId, callback) {
     let timestamp = Date.now() / 1000.0;
     let json = {
         'uuid': userId,
@@ -37,13 +43,17 @@ export function sendPredictionEvent(client_socket, userId, callback) {
             p300: randomP300(),
             score: "0.4"
         });
-    }else{
+    } else{
         // Upon server respose, callback will execute
-        client_socket.once("predict", callback);
+        client_socket.once("predict", () => callback(selection));
         client_socket.emit("predict", JSON.stringify(json));
     }
 }
 
 export function masterUUID() {
-    return "masterUUID";
+    return "masterUUID2";
+}
+
+export function moveTurret(angle){
+    robot_socket.emit("data", angle);
 }

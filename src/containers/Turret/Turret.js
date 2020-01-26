@@ -1,11 +1,9 @@
 import React from 'react';
-import App from "../../components/App/App"
-import Sockets from "../../helpers/getSockets";
-import { sendPredictionEvent, masterUUID } from '../../helpers/P300Communication';
+import App from "../../components/App/App";
+import Arrows from "../../components/KeyComponent/ArrowComponent";
+import { sendPredictionEvent, masterUUID, moveTurret } from '../../helpers/SocketCommunication';
 import './Turret.css';
 import PropTypes from 'prop-types';
-
-const client_socket = (new Sockets()).client_socket;
 
 export default class Turret extends React.Component {
     constructor(props) {
@@ -13,17 +11,18 @@ export default class Turret extends React.Component {
         this.state = {
             displayText: ""
         };
-        this.handlePrediction = this.handlePrediction.bind(this);
+        this.handleData = this.handleData.bind(this);
+        this.handleSelection = this.handleSelection.bind(this);
     }
     
     render() {
         return (
             <App
                 updateCallback={(selection, handleResponse) => 
-                    sendPredictionEvent(client_socket, masterUUID(), handleResponse)}
+                    sendPredictionEvent(selection, masterUUID(), handleResponse)}
                 isChosen={(selection, args) => args['p300']}    
-                handleSelection={(selection, args) => {
-                    console.log("P300 for key: " + selection + " with score: " + args['score'])}}
+                handleSelection={this.handleSelection}
+                handleData={this.handleData}
                 goBack={this.props.goBack}
             >
                 <h3>Try to select a direction using your brain!</h3>
@@ -34,19 +33,26 @@ export default class Turret extends React.Component {
 
     // HELPERS //
 
-    // data is return value from Neurostack Client predict event
-    handlePrediction(data, selectedKey, handleChosen, handleNotChosen){
-        if(data.p300){
-            console.log(selectedKey, " chosen. confidence: ", data.score*100, "%");
-            const newDisplay = this.state.displayText + selectedKey;
-            this.setState({
-                displayText : newDisplay
-            });
-            handleChosen();
+    // Neurostack client callback
+    handleData(){
+    }
+
+    // key is selected
+    handleSelection(selection, args){
+        console.log("P300 for key: " + selection + " with score: " + args['score']);
+        const newDisplay = this.state.displayText + selection;
+        this.setState({
+            displayText : newDisplay
+        });
+        let angle = Arrows.ANGLE(selection);
+        if (angle === -1){
+            angle = 's';
+        } else if (angle === 180) {
+            angle = angle.toString();
         } else {
-            console.log(selectedKey, " NOT chosen. confidence: ", data.score*100, "%");
-            handleNotChosen();
+            angle = (angle + 15).toString();
         }
+        moveTurret(angle);
     }
     
 }

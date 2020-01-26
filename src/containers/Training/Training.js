@@ -1,12 +1,9 @@
 import React from 'react';
 import { getNextInstrPause } from '../../helpers/intervals';
-import { sendTrainingFlashEvent, masterUUID } from '../../helpers/P300Communication';
-import Sockets from "../../helpers/getSockets";
+import { sendTrainingFlashEvent, masterUUID } from '../../helpers/SocketCommunication';
 import App from '../../components/App/App';
 import './Training.css';
 import PropTypes from 'prop-types';
-
-const client_socket = (new Sockets()).client_socket;
 export default class Training extends React.Component {
     constructor(props) {
         super(props);
@@ -17,37 +14,19 @@ export default class Training extends React.Component {
             accuracy: undefined
         };
         this.statement = '↖↑↖↑→';
-        this.trainingCompleted = this.trainingCompleted.bind(this);
-        this.updateAccuracy = this.updateAccuracy.bind(this);
-        this.onUpdate = this.onUpdate.bind(this);
-    }
-
-    onUpdate(selectedKey, handleChosen, handleNotChosen){
-        const curGoal = this.statement[this.state.lettersFound];
-        let P300 = selectedKey === curGoal;
-        sendTrainingFlashEvent(client_socket, masterUUID(), P300 ? 1 : 0, this.updateAccuracy);
-        if(P300){
-            handleChosen();
-            const newDisplay = this.state.displayText + selectedKey;
-            this.setState({
-                displayText : newDisplay, 
-                lettersFound : this.state.lettersFound + 1,
-            });
-            if (this.state.lettersFound === this.statement.length) {
-                this.trainingCompleted();
-            }
-        } else {
-            handleNotChosen();
-        }
+        this.handleData = this.handleData.bind(this);
+        this.handleSelection = this.handleSelection.bind(this);
+        this.isP300 = this.isP300.bind(this);
     }
 
     render() {
         return (
             <App
                 updateCallback={(selection, handleResponse) => 
-                    sendTrainingFlashEvent(client_socket, masterUUID(), this.isP300(selection), handleResponse)}
+                    sendTrainingFlashEvent(masterUUID(), this.isP300(selection), handleResponse)}
                 isChosen={(selection) => this.isP300(selection)}
                 handleSelection={(selection) => {this.handleSelection(selection)}}
+                handleData={this.handleData}
                 goBack={this.props.goBack}
             > 
                 <div> 
@@ -60,20 +39,14 @@ export default class Training extends React.Component {
         )
     }
 
-    // HELPERS // 
-
-    // data is return value from Neurostack Client train event
-    updateAccuracy(data){
-        console.log("here", data)
+    // Neurostack client callback
+    handleData(data) {
         if (data.acc) {
             this.setState({accuracy: data.acc});
         }
     }
-
-    trainingCompleted(){
-        setTimeout(this.props.goBack, getNextInstrPause());
-    }
     
+    // Key is selected
     handleSelection(selection){
         const newDisplay = this.state.displayText + selection;
         this.setState({
@@ -84,6 +57,7 @@ export default class Training extends React.Component {
             setTimeout(this.props.goBack, getNextInstrPause());
         }
     }
+
     isP300(curKey) {
         const curGoal = this.statement[this.state.lettersFound];
         return curKey === curGoal;

@@ -9,17 +9,18 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-scripts": "^2.1.8",
+    "serialport": "^8.0.6",
     "socket.io": "2.1.1",
     "uuid": "^3.3.2",
     "wait-on": "^3.3.0"
   },
   "scripts": {
-    "prestart": "npm install",
     "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron . \"",
     "build": "react-scripts build",
     "pretest": "npm install && eslint . --fix",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "robotserver": "node robotServer.js COM6"
   },
   "browserslist": [
     ">0.2%",

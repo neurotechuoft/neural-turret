@@ -19,8 +19,6 @@ export default class App extends React.Component {
             btnStates: Array(Arrows.BTN_VALS.length).fill("notSelected")
         };
         this.update = this.update.bind(this);
-        this.handleKeyChosen = this.handleKeyChosen.bind(this);
-        this.handleKeyNotChosen = this.handleKeyNotChosen.bind(this);
     }
 
     componentDidMount() {
@@ -42,8 +40,9 @@ export default class App extends React.Component {
         this.setBtnState(curBtnIndex, "selected");
         const curKey = Arrows.BTN_VALS[curBtnIndex];
         this.props.updateCallback(curKey, (args) => {
+            this.props.handleData(args);
             if(this.props.isChosen(curKey, args)){
-                this.setBtnState(curBtnIndex, "chosen");
+                this.setBtnState(Arrows.BTN_VALS().findIndex(curKey), "chosen");
                 this.props.handleSelection(curKey, args);
                 this.shuffleOrder();
             } else {
@@ -63,23 +62,6 @@ export default class App extends React.Component {
     }
 
     // HELPERS //
-
-    // Set the current key as highlighted and return it's index
-    selectCurrentKey(){
-        const curBtnIndex = this.getCurBtnIndex();
-        this.setBtnState(curBtnIndex, "selected");
-        return curBtnIndex;
-    }
-
-    handleKeyChosen(){
-        let curBtnIndex = this.selectCurrentKey();
-        this.setBtnState(curBtnIndex, "chosen");
-        this.shuffleOrder();
-    }
-
-    handleKeyNotChosen(){
-        this.updateCurIndices();
-    }
 
     resetKeys() {
         const btnStates = Array(Arrows.BTN_VALS.length).fill("notSelected");
@@ -142,6 +124,7 @@ App.propTypes = {
     updateCallback: PropTypes.func.isRequired,
     isChosen: PropTypes.func.isRequired,
     handleSelection: PropTypes.func.isRequired,
+    handleData: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
     children: PropTypes.node
   };
