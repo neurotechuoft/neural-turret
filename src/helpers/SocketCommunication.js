@@ -24,9 +24,7 @@ export function sendTrainingFlashEvent(userId, p300, callback) {
         // Upon server respose, callback will execute
         console.log("sent");
         client_socket.once("train", callback);
-        client_socket.emit("train", JSON.stringify(json));        
-        client_socket.once("generate_uuid", (data)=>{console.log(data)});
-        client_socket.emit("generate_uuid", " lashf");
+        client_socket.emit("train", JSON.stringify(json));
     }
 }
 
@@ -45,7 +43,7 @@ export function sendPredictionEvent(selection, userId, callback) {
         });
     } else{
         // Upon server respose, callback will execute
-        client_socket.once("predict", () => callback(selection));
+        client_socket.once("predict", callback);
         client_socket.emit("predict", JSON.stringify(json));
     }
 }

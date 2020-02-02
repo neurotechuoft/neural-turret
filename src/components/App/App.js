@@ -42,7 +42,7 @@ export default class App extends React.Component {
         this.props.updateCallback(curKey, (args) => {
             this.props.handleData(args);
             if(this.props.isChosen(curKey, args)){
-                this.setBtnState(Arrows.BTN_VALS().findIndex(curKey), "chosen");
+                this.setBtnState(curBtnIndex, "chosen");
                 this.props.handleSelection(curKey, args);
                 this.shuffleOrder();
             } else {
